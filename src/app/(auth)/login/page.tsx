@@ -31,6 +31,11 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
+        // If database error, redirect to setup page
+        if (result.error.includes('database') || result.error.includes('Database') || result.error.includes('prisma') || result.error.includes('Unable to open')) {
+          router.push('/setup')
+          return
+        }
         setError(result.error)
       } else {
         router.push("/")

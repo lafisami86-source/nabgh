@@ -1,15 +1,25 @@
 /**
  * Auto-initialize database on app startup
- * This ensures the database is ready even on fresh deployments
+ * Creates demo user and seed data if database is empty
  */
 import { db } from "./db"
 import bcrypt from "bcryptjs"
 
 let initialized = false
+let initPromise: Promise<void> | null = null
 
 export async function ensureDbInitialized() {
   if (initialized) return
 
+  // Prevent concurrent initialization
+  if (!initPromise) {
+    initPromise = doInitialize()
+  }
+
+  return initPromise
+}
+
+async function doInitialize() {
   try {
     const userCount = await db.user.count()
 
@@ -18,7 +28,7 @@ export async function ensureDbInitialized() {
 
       // Create demo user
       const hashedPassword = await bcrypt.hash("123456", 12)
-      await db.user.create({
+      const demoUser = await db.user.create({
         data: {
           email: "ahmed@test.com",
           name: "أحمد",
@@ -44,9 +54,10 @@ export async function ensureDbInitialized() {
         { name: "التربية الإسلامية", icon: "🕌", color: "#06B6D4", order: 7 },
         { name: "الاجتماعيات", icon: "🗺️", color: "#F97316", order: 8 },
       ]
-      const subjects = await Promise.all(
-        subjectsData.map(s => db.subject.create({ data: s }))
-      )
+      const subjects = []
+      for (const s of subjectsData) {
+        subjects.push(await db.subject.create({ data: s }))
+      }
 
       // Create lessons
       const lessonsData = [
@@ -72,8 +83,9 @@ export async function ensureDbInitialized() {
         { subjectIdx: 7, title: "تاريخ الحضارة الإسلامية", description: "نظرة عامة على تاريخ الحضارة الإسلامية وإنجازاتها", content: "الحضارة الإسلامية من أعظم الحضارات في تاريخ البشرية.", order: 2, difficulty: "INTERMEDIATE" as const, duration: 35 },
       ]
 
-      const lessons = await Promise.all(
-        lessonsData.map(l => db.lesson.create({
+      const lessons = []
+      for (const l of lessonsData) {
+        lessons.push(await db.lesson.create({
           data: {
             title: l.title,
             description: l.description,
@@ -84,7 +96,7 @@ export async function ensureDbInitialized() {
             duration: l.duration,
           }
         }))
-      )
+      }
 
       // Create achievements
       const achievementsData = [
@@ -97,9 +109,9 @@ export async function ensureDbInitialized() {
         { name: "بطل الأسئلة", description: "أجب على 50 سؤالاً بشكل صحيح", icon: "🏆", category: "exercise", requirement: 50 },
         { name: "العبقري", description: "حقق مستوى 10 في المنصة", icon: "🧠", category: "level", requirement: 10 },
       ]
-      await Promise.all(
-        achievementsData.map(a => db.achievement.create({ data: a }))
-      )
+      for (const a of achievementsData) {
+        await db.achievement.create({ data: a })
+      }
 
       // Create flashcards
       const flashcardsData = [
@@ -114,11 +126,11 @@ export async function ensureDbInitialized() {
         { front: "ما هو الكسر المختلط؟", back: "عدد يتكون من عدد صحيح وكسر عادي، مثل: 2 و 1/3", subject: "الرياضيات" },
         { front: "ما هي وظيفة الميتوكندريا؟", back: "إنتاج الطاقة (ATP) من خلال عملية التنفس الخلوي", subject: "العلوم" },
       ]
-      await Promise.all(
-        flashcardsData.map(f => db.flashcard.create({
+      for (const f of flashcardsData) {
+        await db.flashcard.create({
           data: { front: f.front, back: f.back, subject: f.subject, userId: null }
-        }))
-      )
+        })
+      }
 
       console.log("✅ Database initialized successfully!")
     }
@@ -126,6 +138,7 @@ export async function ensureDbInitialized() {
     initialized = true
   } catch (error) {
     console.error("❌ Database initialization error:", error)
+    initPromise = null // Allow retry
     // Don't throw - let the app continue, the seed route can be called manually
   }
 }
