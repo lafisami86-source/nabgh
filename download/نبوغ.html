@@ -68,8 +68,9 @@ button,input,select,textarea{font-family:var(--f)}
 .main{margin-right:210px;flex:1;min-width:0}
 .main.full{margin-right:0}
 .topbar{background:var(--sur);border-bottom:1px solid var(--bd);padding:.62rem 1.1rem;display:flex;align-items:center;gap:.65rem;position:sticky;top:0;z-index:100}
-.hbg{background:none;border:1.5px solid var(--bd);border-radius:7px;width:30px;height:30px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:4px;cursor:pointer}
-.hbg span{width:14px;height:1.5px;background:var(--tx);border-radius:2px;display:block}
+.hbg{background:none;border:1.5px solid var(--bd);border-radius:7px;width:34px;height:34px;display:none;flex-direction:column;justify-content:center;align-items:center;gap:4px;cursor:pointer;padding:0}
+.hbg span{width:16px;height:1.8px;background:var(--tx);border-radius:2px;display:block}
+.hbg:active{background:var(--pl)}
 .tb-title{font-weight:900;font-size:.93rem;flex:1}
 .pg{padding:1rem 1.1rem;display:flex;flex-direction:column;gap:1rem}
 
@@ -104,8 +105,8 @@ button,input,select,textarea{font-family:var(--f)}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
 .ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}.ch-grid{grid-template-columns:1fr}
-@media(max-width:420px){.g2,.g3{grid-template-columns:1fr}.g4{grid-template-columns:1fr}.ch-grid{grid-template-columns:1fr}
+@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}.ch-grid{grid-template-columns:1fr}}
+@media(max-width:420px){.g2,.g3{grid-template-columns:1fr}.g4{grid-template-columns:1fr}.ch-grid{grid-template-columns:1fr}}
 
 .sec{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;transition:border-color var(--tr);word-break:break-word;overflow-wrap:break-word}
 .sh{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--bd)}
