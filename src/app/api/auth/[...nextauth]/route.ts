@@ -3,6 +3,10 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
+import { ensureDbInitialized } from "@/lib/init-db"
+
+// Auto-initialize database on auth requests
+ensureDbInitialized()
 
 const handler = NextAuth({
   adapter: PrismaAdapter(db),

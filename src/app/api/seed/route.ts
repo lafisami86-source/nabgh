@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import bcrypt from "bcryptjs"
 
 export async function GET() {
   try {
@@ -10,6 +11,26 @@ export async function GET() {
         message: "البيانات موجودة بالفعل",
         counts: {
           subjects: existingSubjects,
+        }
+      })
+    }
+
+    // ─── Seed Demo User ──────────────────────────────────
+    const existingUser = await db.user.findUnique({ where: { email: "ahmed@test.com" } })
+    if (!existingUser) {
+      const hashedPassword = await bcrypt.hash("123456", 12)
+      await db.user.create({
+        data: {
+          email: "ahmed@test.com",
+          name: "أحمد",
+          password: hashedPassword,
+          role: "STUDENT",
+          avatar: "أح",
+          plan: "FREE",
+          streak: 3,
+          xp: 450,
+          level: 5,
+          country: "ليبيا",
         }
       })
     }
